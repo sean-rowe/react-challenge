@@ -1,7 +1,9 @@
-import { CharacterInvestigator } from "../investigators/CharacterInvestigator";
+// src/delegators/CharacterRevealDelegator.ts
+
 import { BaseDelegator } from "../patterns/BasePatterns";
 import { CharacterRevealState } from "../states/CharacterRevealState";
-import { CharacterRevealWorker } from "../workers/CharacterRevealWorker";
+import {ICharacterInvestigator} from "../investigators/CharacterInvestigator";
+import {ICharacterRevealWorker} from "../workers/CharacterRevealWorker";
 
 /**
  * Delegator coordinating character reveal process
@@ -12,7 +14,7 @@ import { CharacterRevealWorker } from "../workers/CharacterRevealWorker";
  * }
  *
  * @example {
- *   const delegator = new CharacterRevealDelegator();
+ *   const delegator = new CharacterRevealDelegator(investigator, worker);
  *   const newState = delegator.process(currentState);
  * }
  *
@@ -29,11 +31,11 @@ import { CharacterRevealWorker } from "../workers/CharacterRevealWorker";
  *   Then: Returns unchanged state
  * }
  */
-export class CharacterRevealDelegator
-  implements BaseDelegator<CharacterRevealState>
-{
-  private readonly worker = CharacterRevealWorker;
-  private readonly investigator = CharacterInvestigator;
+export class CharacterRevealDelegator implements BaseDelegator<CharacterRevealState> {
+  constructor(
+      private readonly investigator: ICharacterInvestigator,
+      private readonly worker: ICharacterRevealWorker
+  ) {}
 
   /**
    * Processes character reveal state transition

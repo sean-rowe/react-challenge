@@ -1,5 +1,28 @@
 import { CharacterRevealState } from "../states/CharacterRevealState";
-import { CharacterInvestigator } from "../investigators/CharacterInvestigator";
+import {CharacterInvestigator} from "../investigators/CharacterInvestigator";
+
+/**
+ * Interface for character reveal error operations
+ *
+ * @remarks {
+ *   Defines contract for character reveal validation
+ * }
+ */
+export interface ICharacterRevealError {
+  /**
+   * Asserts character can be revealed
+   *
+   * @remarks {
+   *   Validates state for character reveal
+   * }
+   *
+   * @param state Current reveal state
+   * @throws {CharacterRevealError} If character cannot be revealed
+   */
+  assertCanRevealCharacter(
+      state: CharacterRevealState
+  ): asserts state is CharacterRevealState;
+}
 
 /**
  * Error class for character reveal process
@@ -9,7 +32,8 @@ import { CharacterInvestigator } from "../investigators/CharacterInvestigator";
  * }
  *
  * @example {
- *   CharacterRevealError.assertCanRevealCharacter(state);
+ *   const error = new CharacterRevealError("Error message");
+ *   error.assertCanRevealCharacter(state);
  *   // Proceeds if valid, throws if invalid
  * }
  *
@@ -23,10 +47,13 @@ import { CharacterInvestigator } from "../investigators/CharacterInvestigator";
  *   Then: Does not throw error
  * }
  */
-export class CharacterRevealError extends Error {
+export class CharacterRevealError extends Error implements ICharacterRevealError {
+  private readonly investigator: CharacterInvestigator;
+
   constructor(message: string) {
     super(message);
     this.name = "CharacterRevealError";
+    this.investigator = new CharacterInvestigator();
   }
 
   /**
@@ -39,12 +66,10 @@ export class CharacterRevealError extends Error {
    * @param state Current reveal state
    * @throws {CharacterRevealError} If character cannot be revealed
    */
-  public static assertCanRevealCharacter(
-    state: CharacterRevealState
-  ): asserts state is CharacterRevealState {
-    if (!CharacterInvestigator.shouldRevealNextCharacter(state)) {
+  public assertCanRevealCharacter(state: CharacterRevealState): asserts state is CharacterRevealState {
+    if (!this.investigator.shouldRevealNextCharacter(state)) {
       throw new CharacterRevealError(
-        "Cannot reveal character: Sequence complete or no characters remaining"
+          "Cannot reveal character: Sequence complete or no characters remaining"
       );
     }
   }

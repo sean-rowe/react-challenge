@@ -1,5 +1,40 @@
+// src/workers/CharacterRevealWorker.ts
+
 import { CharacterRevealError } from "../errors/CharacterRevealError";
 import { CharacterRevealState } from "../states/CharacterRevealState";
+
+/**
+ * Interface for character reveal worker operations
+ *
+ * @remarks {
+ *   Defines contract for character reveal state transitions
+ * }
+ */
+export interface ICharacterRevealWorker {
+  /**
+   * Creates initial reveal state
+   *
+   * @remarks {
+   *   Sets up state for character-by-character reveal
+   * }
+   *
+   * @param content - String to be revealed
+   * @returns {CharacterRevealState} Initial reveal state
+   */
+  createInitialState(content: string): CharacterRevealState;
+
+  /**
+   * Reveals next character in sequence
+   *
+   * @remarks {
+   *   Moves one character from waiting to revealed
+   * }
+   *
+   * @param currentState - Current reveal state
+   * @returns {CharacterRevealState} Updated state with next character revealed
+   */
+  revealNextCharacter(currentState: CharacterRevealState): CharacterRevealState;
+}
 
 /**
  * Worker handling character reveal state transitions
@@ -9,8 +44,9 @@ import { CharacterRevealState } from "../states/CharacterRevealState";
  * }
  *
  * @example {
- *   const state = CharacterRevealWorker.createInitialState("hello");
- *   const newState = CharacterRevealWorker.revealNextCharacter(state);
+ *   const worker = new CharacterRevealWorker();
+ *   const state = worker.createInitialState("hello");
+ *   const newState = worker.revealNextCharacter(state);
  * }
  *
  * @testScenario {
@@ -24,7 +60,9 @@ import { CharacterRevealState } from "../states/CharacterRevealState";
  *   And: Updates completion status
  * }
  */
-export class CharacterRevealWorker {
+export class CharacterRevealWorker implements ICharacterRevealWorker {
+  constructor(private readonly error: CharacterRevealError) {}
+
   /**
    * Creates initial reveal state
    *
@@ -35,7 +73,7 @@ export class CharacterRevealWorker {
    * @param content - String to be revealed
    * @returns {CharacterRevealState} Initial reveal state
    */
-  public static createInitialState(content: string): CharacterRevealState {
+  public createInitialState(content: string): CharacterRevealState {
     return new CharacterRevealState({
       charactersRevealedInSequence: [],
       charactersWaitingToBeRevealed: content.split(""),
@@ -54,10 +92,8 @@ export class CharacterRevealWorker {
    * @returns {CharacterRevealState} Updated state with next character revealed
    * @exception {CharacterRevealError} When reveal preconditions fail
    */
-  public static revealNextCharacter(
-    currentState: CharacterRevealState
-  ): CharacterRevealState {
-    CharacterRevealError.assertCanRevealCharacter(currentState);
+  public revealNextCharacter(currentState: CharacterRevealState): CharacterRevealState {
+    this.error.assertCanRevealCharacter(currentState);
 
     const nextChar = currentState.charactersWaitingToBeRevealed[0];
     const remainingChars = currentState.charactersWaitingToBeRevealed.slice(1);

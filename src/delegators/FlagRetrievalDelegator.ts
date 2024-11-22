@@ -1,7 +1,9 @@
-import { FlagRetrievalInvestigator } from "../investigators/FlagRetrievalInvestigator";
+// src/delegators/FlagRetrievalDelegator.ts
+
+import { IFlagRetrievalInvestigator} from "../investigators/FlagRetrievalInvestigator";
 import { BaseDelegator } from "../patterns/BasePatterns";
 import { FlagRetrievalState } from "../states/FlagRetrievalState";
-import { FlagRetrievalWorker } from "../workers/FlagRetrievalWorker";
+import { IFlagRetrievalWorker} from "../workers/FlagRetrievalWorker";
 
 /**
  * Delegator coordinating flag retrieval process
@@ -12,7 +14,7 @@ import { FlagRetrievalWorker } from "../workers/FlagRetrievalWorker";
  * }
  *
  * @example {
- *   const delegator = new FlagRetrievalDelegator();
+ *   const delegator = new FlagRetrievalDelegator(investigator, worker);
  *   const newState = await delegator.process(currentState);
  * }
  *
@@ -29,11 +31,11 @@ import { FlagRetrievalWorker } from "../workers/FlagRetrievalWorker";
  *   Then: Returns unchanged state
  * }
  */
-export class FlagRetrievalDelegator
-  implements BaseDelegator<FlagRetrievalState>
-{
-  private readonly worker = FlagRetrievalWorker;
-  private readonly investigator = FlagRetrievalInvestigator;
+export class FlagRetrievalDelegator implements BaseDelegator<FlagRetrievalState> {
+  constructor(
+      private readonly investigator: IFlagRetrievalInvestigator,
+      private readonly worker: IFlagRetrievalWorker
+  ) {}
 
   /**
    * Processes flag retrieval state transition
@@ -45,9 +47,7 @@ export class FlagRetrievalDelegator
    * @param currentState - Current retrieval state
    * @returns {Promise<FlagRetrievalState>} Updated state after processing
    */
-  public async process(
-    currentState: FlagRetrievalState
-  ): Promise<FlagRetrievalState> {
+  public async process(currentState: FlagRetrievalState): Promise<FlagRetrievalState> {
     if (this.investigator.shouldRetrieveFlag(currentState)) {
       return this.worker.retrieveFlag(currentState);
     }

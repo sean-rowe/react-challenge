@@ -1,3 +1,5 @@
+// src/states/RenderState.ts
+
 /**
  * Represents the state of what should be rendered to the user
  */

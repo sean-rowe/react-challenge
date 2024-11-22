@@ -1,3 +1,5 @@
+// src/states/FlagRetrievalState.ts
+
 /**
  * Represents state of flag content retrieval process
  *
@@ -42,10 +44,20 @@ export class FlagRetrievalState implements IFlagRetrievalState {
     Object.freeze(this);
   }
 
+  /**
+   * Retrieves the content of the flag.
+   *
+   * @return {string | null} The content of the flag, or null if not set.
+   */
   get retrievedFlagContent(): string | null {
     return this._retrievedFlagContent;
   }
 
+  /**
+   * Retrieves the current retrieval error message, if any.
+   *
+   * @return {string | null} The error message that occurred during retrieval, or null if there was no error.
+   */
   get retrievalError(): string | null {
     return this._retrievalError;
   }

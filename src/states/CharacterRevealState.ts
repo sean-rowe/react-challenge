@@ -1,3 +1,5 @@
+// src/states/CharacterRevealState.ts
+
 /**
  * Represents state of character-by-character reveal sequence
  *
@@ -46,14 +48,29 @@ export class CharacterRevealState implements ICharacterRevealState {
     Object.freeze(this);
   }
 
+  /**
+   * Gets the characters that have been revealed in sequence.
+   *
+   * @return {string[]} An array of characters that have been revealed in the order they were revealed.
+   */
   get charactersRevealedInSequence(): string[] {
     return [...this._charactersRevealedInSequence];
   }
 
+  /**
+   * Retrieves the list of characters that are currently waiting to be revealed.
+   *
+   * @return {string[]} An array of characters that are pending revelation.
+   */
   get charactersWaitingToBeRevealed(): string[] {
     return [...this._charactersWaitingToBeRevealed];
   }
 
+  /**
+   * Indicates whether the reveal sequence has been completed.
+   *
+   * @return {boolean} True if the reveal sequence is complete, false otherwise.
+   */
   get revealSequenceComplete(): boolean {
     return this._revealSequenceComplete;
   }
